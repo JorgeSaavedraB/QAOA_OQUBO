@@ -24,23 +24,11 @@ def DocplexModeltoQUBO(docplexModel,
     include : {'Total', 'Objective', 'Penalization'}, default='Total'
         Determines which terms are included in the QUBO.
 
-    exponential : bool, default=True
-        If True, applies exponential (λ1, λ2 terms).
-
-    softplus : bool, default=False
-        If True, uses a quadratic approximation of softplus as penalization.
-
     alpha : float
-        Scale factor for softplus penalization.
+        Scale factor.
 
     gamma : float
-        Smoothness parameter for softplus.
-
-    approx_range : tuple, default=(-3, 3)
-        Interval of u-values where the quadratic approximation of softplus is fitted.
-
-    approx_points : int, default=200
-        Number of sample points for fitting the quadratic approximation.
+        Constant factor.
 
     Returns
     -------
@@ -171,7 +159,7 @@ def QUBOtoIsingModel(docplexModel,
     docplexModel : docplex.mp.model.Model
         A DOcplex model object containing the objective and constraints.
 
-    UPcoefficients : list of float, default=[0.5, 0.5]
+    UPcoefficients : list of float, default=[1.0, 1.0]
         Coefficients for unbalanced penalization (see `DocplexModeltoQUBO`).
 
     include : {'Total', 'Objective', 'Penalization'}, default='Total'
@@ -188,9 +176,6 @@ def QUBOtoIsingModel(docplexModel,
 
     pen_normalize : bool, default=False
         If True, normalizes only the penalization coefficients before conversion.
-
-    exponential : bool, default=True
-        If True, applies exponential when constructing the QUBO.
 
     Returns
     -------
