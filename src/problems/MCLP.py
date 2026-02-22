@@ -9,12 +9,7 @@ def get_neighbors(rows: int,
                   S: list):
     potential_sites = [idx for idx, val in enumerate(J) if val==1]
     
-    sites = {}
-    counter = 0
-    for x in range(rows):
-        for y in range(cols):
-            sites[counter] = (x, y)
-            counter += 1
+    sites = {(i): (i//cols, i % cols) for i in range(rows*cols)}
     
     N = defaultdict(list)
     for i in range(rows * cols):
@@ -28,7 +23,8 @@ def MCLP(J: np.ndarray,
          I: np.ndarray,
          p: int,
          S: int,
-         version: str = 'COP') -> Model:
+         version: str = 'COP',
+         slack_vars:bool = False) -> Model:
     """
     Args:
     
@@ -54,17 +50,28 @@ def MCLP(J: np.ndarray,
     # Objective function
     max_pop = max(I)
     objective_function = sum(- 1* I[i] * y[i] for i in range(n))
+    model.minimize(objective_function)
     
     # Constraints
     neighbors = get_neighbors(rows, cols, J, S)
-        
+    
+    s = {}
     for i in range(n):
         if neighbors[i]:
-            model.add_constraint(y[i] <= sum((x[j] for j in neighbors[i])), ctname=f'coverage_{i}')
+            if slack_vars==False:
+                model.add_constraint(y[i] <= sum((x[j] for j in neighbors[i])), ctname=f'coverage_{i}')
+            else: 
+                N_bits_i = int(np.ceil(np.log2(len(neighbors[i])) + 1))
+                if version == 'COP':
+                    s[i] = np.array(model.binary_var_list(N_bits_i, name=f'slack{i}'))
+                elif version == 'CONT':
+                    s[i] = np.array(model.continuous_var_list(N_bits_i, lb=0, ub=1, name=f'slack{i}'))
+                S_i = model.sum(2**j * s[i][j] for j in range(N_bits_i))
+                model.add_constraint(y[i] + S_i == sum((x[j] for j in neighbors[i])) , ctname=f'coverage_{i}')
         else:
             model.add_constraint(y[i] == 0, ctname=f'coverage_{i}')
 
     model.add_constraint(sum((x[i] for i in range(m))) == p, ctname='numspots')
-    model.minimize(objective_function)
+ 
     
     return model
