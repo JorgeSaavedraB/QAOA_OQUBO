@@ -9,7 +9,7 @@ The project is built around DOcplex models and provides an end-to-end workflow:
 - Transform the QUBO into an Ising Hamiltonian.
 - Solve or analyze the resulting Hamiltonian using classical or quantum optimization techniques.
 
-Features:
+## Features:
 - Automatic conversion from DOcplex models to QUBO formulations.
 - Conversion from QUBO to Ising Hamiltonians.
 - Support for both equality constraints and inequality constraints through:
@@ -26,26 +26,29 @@ Utilities for:
 - Portfolio Optimization (PO).
 - Maximum Covering Location Problem (MCLP).
 
-Repository Structure:
-src/
+## Repository Structure:
+```text
+.
+├── src
+│   ├── problems
+│   │   ├── Portfolio Optimization model
+│   │   └── Maximum Covering Location Problem model
+│   │
+│   └── utils
+│       ├── DOcplex → QUBO conversion
+│       ├── QUBO → Ising conversion
+│       ├── CPLEX helper functions
+│       ├── Brute-force solvers
+│       └── Auxiliary utilities
 │
-├── problems/
-│   ├── Portfolio Optimization model
-│   └── Maximum Covering Location Problem model
-│
-├── utils/
-│   ├── DOcplex → QUBO conversion
-│   ├── QUBO → Ising conversion
-│   ├── CPLEX helper functions
-│   ├── Brute-force solvers
-│   └── Auxiliary utilities
-│
-experiments/
+├── experiments
 │   ├── Portfolio Optimization experiments
 │   └── MCLP experiments
 │
-README.md
-Experimental Benchmarks
+└── README.md
+```
+
+## Experimental Benchmarks:
 
 The repository contains scripts used to evaluate several QAOA-based optimization strategies on the Portfolio Optimization and Maximum Covering Location Problem benchmarks.
 
@@ -81,7 +84,7 @@ The project relies on the following main libraries:
 -  yfinance
 -  matplotlib
 
-References:
+## References:
 
 If you use this repository in your research, please consider citing the following works.
 
