@@ -14,30 +14,73 @@ def DocplexModeltoQUBO(docplexModel,
                        EqC=2.0,
                        precision=20):
     """
-    Convert a DOcplex optimization model into a Quadratic Unconstrained Binary Optimization (QUBO) formulation.
-
+    Convert a DOcplex optimization model into a Quadratic Unconstrained Binary
+    Optimization (QUBO) formulation.
+    
+    The objective function and constraints of the input optimization model are
+    translated into a QUBO representation. Equality constraints are enforced
+    through quadratic penalties, while inequality constraints can be handled
+    using the Unbalanced Penalization (UP) method.
+    
     Parameters
     ----------
     docplexModel : docplex.mp.model.Model
-        A DOcplex model object containing the objective and constraints.
-
-    include : {'Total', 'Objective', 'Penalization'}, default='Total'
-        Determines which terms are included in the QUBO.
-
-    alpha : float
-        Scale factor.
-
-    gamma : float
-        Constant factor.
-
+        DOcplex optimization model containing binary decision variables,
+        an objective function, and optional constraints.
+    
+    include : {"Total", "Objective", "Penalization"}, default="Total"
+        Specifies which terms are included in the generated QUBO:
+    
+        - ``"Total"``: objective and penalty terms.
+        - ``"Objective"``: objective function only.
+        - ``"Penalization"``: penalty terms only.
+    
+    normalize : bool, default=False
+        If True, normalize the final QUBO coefficients by the largest absolute
+        coefficient.
+    
+    obj_normalize : bool, default=False
+        If True, normalize only the objective contribution before combining it
+        with the penalty terms.
+    
+    pen_normalize : bool, default=False
+        If True, normalize only the penalty contribution before combining it
+        with the objective.
+    
+    UP : bool, default=False
+        If True, inequality constraints are converted using the Unbalanced
+        Penalization (UP) method. If False, only equality constraints are
+        supported.
+    
+    alpha : float, default=1.0
+        Quadratic penalty coefficient used during constraint encoding.
+    
+    gamma : float, default=1.0
+        Constant penalty coefficient used by the UP formulation.
+    
+    EqC : float, default=2.0
+        Penalty coefficient applied to equality constraints.
+    
+    precision : int, default=20
+        Decimal precision used when rounding normalized coefficients.
+    
     Returns
     -------
-    QUBO : dict
-        Dictionary representation of the QUBO with keys as `(i, j)` variable index pairs.
-
+    QUBO : dict[tuple[int, int], float]
+        Dictionary representing the QUBO matrix. Keys correspond to variable
+        index pairs ``(i, j)`` and values are the associated coefficients.
+    
     constant : float
-        Constant offset term in the QUBO formulation.
+        Constant offset of the QUBO objective function.
+    
+    References
+    ----------
+    .. [1] Hernández et al., *Unbalanced penalization: A new approach to encode
+           inequality constraints for quantum optimization*,
+           Quantum Science and Technology, 2024.
+           DOI: 10.1088/2058-9565/ad35e4
     """
+    
     var_assign = {var.name: num for num, var in enumerate(docplexModel.iter_variables())}
     QUBO_obj = {}
     try:
@@ -79,6 +122,7 @@ def DocplexModeltoQUBO(docplexModel,
                 a = alpha
                 b = alpha
                 c = gamma
+            # UP == False is not allowed since the other way is to use Slack Variables and it transforms the inquealities to inequalities
         sign = 1 if cstr.sense.name == 'LE' else -1
         rhs_signed = sign * rhs
         constr_dict = {k: sign * v for k, v in constr_dict.items()}
@@ -133,7 +177,6 @@ def DocplexModeltoQUBO(docplexModel,
 
     if normalize:
         max_qubo = max([abs(val) for val in QUBO.values()], default=0)
-        #max_qubo = norm_const
         if max_qubo != 0: 
             QUBO = {key: round(val/max_qubo, precision) for key, val in QUBO.items()}
             constant = round(constant / max_qubo, precision)
@@ -151,48 +194,79 @@ def QUBOtoIsingModel(docplexModel,
                        EqC=2.0,
                        precision=20):
     """
-    Convert a DOcplex optimization model into an Ising model formulation 
-    (from its QUBO representation).
-
+    Convert a DOcplex optimization model into its equivalent Ising Hamiltonian.
+    
+    The optimization model is first transformed into a QUBO formulation using
+    :func:`DocplexModeltoQUBO`, after which the standard binary-to-spin mapping
+    
+    .. math::
+    
+        x_i = \\frac{1 - s_i}{2},
+    
+    is applied to obtain the corresponding Ising Hamiltonian.
+    
     Parameters
     ----------
     docplexModel : docplex.mp.model.Model
-        A DOcplex model object containing the objective and constraints.
-
-    UPcoefficients : list of float, default=[1.0, 1.0]
-        Coefficients for unbalanced penalization (see `DocplexModeltoQUBO`).
-
-    include : {'Total', 'Objective', 'Penalization'}, default='Total'
-        Determines which terms are included in the model conversion:
-        - 'Total': Objective + penalization terms.
-        - 'Objective': Only the original objective terms.
-        - 'Penalization': Only the penalization terms.
-
+        DOcplex optimization model containing binary decision variables.
+    
+    include : {"Total", "Objective", "Penalization"}, default="Total"
+        Specifies which terms are included in the generated Hamiltonian.
+    
     normalize : bool, default=False
-        If True, normalizes the entire QUBO coefficients before conversion.
-
+        If True, normalize the complete QUBO before the Ising conversion.
+    
     obj_normalize : bool, default=False
-        If True, normalizes only the objective coefficients before conversion.
-
+        If True, normalize only the objective contribution.
+    
     pen_normalize : bool, default=False
-        If True, normalizes only the penalization coefficients before conversion.
-
+        If True, normalize only the penalty contribution.
+    
+    UP : bool, default=False
+        If True, inequality constraints are encoded using the Unbalanced
+        Penalization (UP) method.
+    
+    alpha : float, default=1.0
+        Quadratic penalty coefficient.
+    
+    gamma : float, default=1.0
+        Constant penalty coefficient used by the UP formulation.
+    
+    EqC : float, default=2.0
+        Penalty coefficient for equality constraints.
+    
+    precision : int, default=20
+        Decimal precision used when rounding normalized coefficients.
+    
     Returns
     -------
-    ising_model : dict
-        Dictionary containing the Ising model coefficients. 
-        Keys are `(i, i)` for local fields (h) and `(i, j)` for couplings (J).
-
+    ising_model : dict[tuple[int, int], float]
+        Dictionary containing the Ising Hamiltonian coefficients. Diagonal keys
+        ``(i, i)`` correspond to local fields :math:`h_i`, while off-diagonal
+        keys ``(i, j)`` correspond to spin-spin couplings :math:`J_{ij}`.
+    
     offset : float
-        Constant offset term in the Ising Hamiltonian.
-
+        Constant energy offset of the Ising Hamiltonian.
+    
     Notes
     -----
-    - The transformation is based on the standard mapping between binary variables 
-      (0/1 in QUBO) and spin variables (-1/+1 in Ising).
-    - The QUBO diagonal terms contribute to both the local fields and the offset.
-    - Off-diagonal QUBO terms contribute to couplings (J) and redistribute into local fields.
+    The conversion uses the standard correspondence between binary variables
+    and Ising spins,
+    
+    .. math::
+    
+        x_i = \\frac{1 - s_i}{2},
+    
+    where :math:`x_i \\in \\{0,1\\}` and :math:`s_i \\in \\{-1,+1\\}`.
+    
+    References
+    ----------
+    .. [1] Hernández et al., *Unbalanced penalization: A new approach to encode
+           inequality constraints for quantum optimization*,
+           Quantum Science and Technology, 2024.
+           DOI: 10.1088/2058-9565/ad35e4
     """
+    
     QUBO, cnt = DocplexModeltoQUBO(docplexModel, 
                        include=include, 
                        normalize=normalize, 
