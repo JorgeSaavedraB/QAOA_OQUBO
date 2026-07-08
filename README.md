@@ -41,7 +41,7 @@ Utilities for:
 │       ├── Brute-force solvers
 │       └── Auxiliary utilities
 │
-├── experiments
+├── results
 │   ├── Portfolio Optimization experiments
 │   └── MCLP experiments
 │
