@@ -1,29 +1,30 @@
-OQUBO: Optimization-to-QUBO for Quantum Algorithms
+<h1 align="center"> OQUBO: Optimization-to-QUBO for Quantum Algorithms </h1>
+
 
 OQUBO is a Python library for transforming constrained binary optimization problems into Quadratic Unconstrained Binary Optimization (QUBO) and Ising Hamiltonian formulations. The repository also provides tools for constructing optimization models, evaluating quantum optimization algorithms, and reproducing the numerical experiments presented in our work.
 
 The project is built around DOcplex models and provides an end-to-end workflow:
-* Formulate an optimization problem in DOcplex.
-* Convert the constrained problem into a QUBO formulation.
-* Transform the QUBO into an Ising Hamiltonian.
-* Solve or analyze the resulting Hamiltonian using classical or quantum optimization techniques.
+- Formulate an optimization problem in DOcplex.
+- Convert the constrained problem into a QUBO formulation.
+- Transform the QUBO into an Ising Hamiltonian.
+- Solve or analyze the resulting Hamiltonian using classical or quantum optimization techniques.
 
 Features:
-* Automatic conversion from DOcplex models to QUBO formulations.
-* Conversion from QUBO to Ising Hamiltonians.
-* Support for both equality constraints and inequality constraints through:
-* Standard quadratic penalties.
-* Unbalanced Penalization (UP).
-* Optional coefficient normalization.
+- Automatic conversion from DOcplex models to QUBO formulations.
+- Conversion from QUBO to Ising Hamiltonians.
+- Support for both equality constraints and inequality constraints through:
+- Standard quadratic penalties.
+- Unbalanced Penalization (UP).
+- Optional coefficient normalization.
 
 Utilities for:
-* Exact brute-force energy evaluation.
-* Expectation value computation from measurement counts.
-* Warm-start parameter generation.
-* Solution feasibility verification.
-* Implementations of benchmark optimization problems:
-* Portfolio Optimization (PO).
-* Maximum Covering Location Problem (MCLP).
+- Exact brute-force energy evaluation.
+- Expectation value computation from measurement counts.
+- Warm-start parameter generation.
+- Solution feasibility verification.
+- Implementations of benchmark optimization problems:
+- Portfolio Optimization (PO).
+- Maximum Covering Location Problem (MCLP).
 
 Repository Structure:
 src/
@@ -50,35 +51,35 @@ The repository contains scripts used to evaluate several QAOA-based optimization
 
 The implemented approaches include:
 
-* Standard QAOA
-*QAOA with Linear Ramp (LR) parameter initialization
-* Warm-Start (WS) QAOA
-* Warm-Start + Linear Ramp
-* Unbalanced Penalization (UP)
-* Combinations of UP with WS and LR
+- Standard QAOA
+- QAOA with Linear Ramp (LR) parameter initialization
+- Warm-Start (WS) QAOA
+- Warm-Start + Linear Ramp
+- Unbalanced Penalization (UP)
+- Combinations of UP with WS and LR
 
 The experimental scripts report quantities such as:
 
-* Approximation ratio
-* Ground-state probability
-* Feasible solution rate
-*  Energy expectation values
-* Number of optimizer evaluations
-*  Circuit statistics
-*  Execution times
+- Approximation ratio
+- Ground-state probability
+- Feasible solution rate
+-  Energy expectation values
+- Number of optimizer evaluations
+-  Circuit statistics
+-  Execution times
 
 The project relies on the following main libraries:
 
-*  Python 3.x
-*  NumPy
-*  DOcplex
-*  IBM CPLEX
-*  Qiskit
-*  Qiskit Aer
-*  SciPy
-*  pandas
-*  yfinance
-*  matplotlib
+-  Python 3.x
+-  NumPy
+-  DOcplex
+-  IBM CPLEX
+-  Qiskit
+-  Qiskit Aer
+-  SciPy
+-  pandas
+-  yfinance
+-  matplotlib
 
 References:
 
