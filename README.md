@@ -90,11 +90,11 @@ If you use this repository in your research, please consider citing the followin
 
 Unbalanced Penalization
 
-Montañez et al., Unbalanced penalization: a new approach to encode inequality constraints of combinatorial problems for quantum optimization algorithms, Quantum Science and Technology (2024). DOI: 10.1088/2058-9565/ad35e4
+Montañez et al., Unbalanced penalization: a new approach to encode inequality constraints of combinatorial problems for quantum optimization algorithms, Quantum Science and Technology (2024). DOI: [10.1088/2058-9565/ad35e4](https://iopscience.iop.org/article/10.1088/2058-9565/ad35e4)
 
 Warm-Start QAOA
 
-Egger, et al., Warm-starting quantum optimization, Quantum 5, 479 (2021). DOI: 10.22331/q-2021-06-17-479
+Egger, et al., Warm-starting quantum optimization, Quantum 5, 479 (2021). DOI: [10.22331/q-2021-06-17-479](https://quantum-journal.org/papers/q-2021-06-17-479/)
 
 ## License:
 
