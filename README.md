@@ -96,6 +96,6 @@ Warm-Start QAOA
 
 Egger, et al., Warm-starting quantum optimization, Quantum 5, 479 (2021). DOI: 10.22331/q-2021-06-17-479
 
-## License
+## License:
 
 This repository is intended for academic and research use.
