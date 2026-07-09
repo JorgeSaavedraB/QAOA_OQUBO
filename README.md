@@ -1,12 +1,12 @@
 <h1 align="center"> OQUBO: Optimization-to-QUBO for Quantum Algorithms </h1>
 
 
-OQUBO is a Python library for transforming constrained binary optimization problems into Quadratic Unconstrained Binary Optimization (QUBO) and Ising Hamiltonian formulations. The repository also provides tools for constructing optimization models, evaluating quantum optimization algorithms, and reproducing the numerical experiments presented in our work.
+**OQUBO** is a Python library for transforming constrained binary optimization problems into Quadratic Unconstrained Binary Optimization (QUBO) and Ising Hamiltonian formulations. The repository also provides tools for constructing optimization models, evaluating quantum optimization algorithms, and reproducing the numerical experiments presented in our work.
 
 The project is built around DOcplex models and provides an end-to-end workflow:
 - Formulate an optimization problem in DOcplex.
 - Convert the constrained problem into a QUBO formulation.
-- Transform the QUBO into an Ising Hamiltonian.
+- Transform the **QUBO** into an Ising Hamiltonian.
 - Solve or analyze the resulting Hamiltonian using classical or quantum optimization techniques.
 
 ## Features:
@@ -83,6 +83,32 @@ The project relies on the following main libraries:
 -  pandas
 -  yfinance
 -  matplotlib
+
+## Quick Start
+
+The following example illustrates the basic workflow for generating a QUBO and its corresponding Ising Hamiltonian from a DOcplex optimization model.
+
+```python
+from src.problems.PortfolioOptimization import portfolio_optimization
+from src.utils.OQUBO import DocplexModeltoQUBO, QUBOtoIsingModel
+
+# Build a DOcplex optimization model
+model = portfolio_optimization(
+    mu=mu,
+    sigma=sigma,
+    risk=0.5,
+    budget=5
+)
+
+# Generate the QUBO formulation
+qubo, offset = DocplexModeltoQUBO(model)
+
+# Convert the QUBO into an Ising Hamiltonian
+ising_model, ising_offset = QUBOtoIsingModel(model)
+
+print(qubo)
+print(ising_model)
+```
 
 ## References:
 
